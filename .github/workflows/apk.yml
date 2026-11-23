@@ -1,7 +1,10 @@
 name: APK olustur
 on:
   push:
+    branches: [main]
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,3 +19,14 @@ jobs:
         with:
           name: CenazeTakip-APK
           path: app/build/outputs/apk/debug/app-debug.apk
+      - name: APK dalina yukle
+        run: |
+          mkdir /tmp/out && cp app/build/outputs/apk/debug/app-debug.apk /tmp/out/CenazeTakip.apk
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git checkout --orphan apk
+          git rm -rf . -q
+          cp /tmp/out/CenazeTakip.apk .
+          git add CenazeTakip.apk
+          git commit -q -m "APK"
+          git push -f origin apk
