@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f5f4a">
+<title>Cenaze Takip</title>
+<style>
+:root{
+  --bg:#f3f1ea; --card:#ffffff; --ink:#1d2927; --muted:#66736f; --line:#e1ddd1;
+  --primary:#1f5f4a; --primary-ink:#ffffff; --accent:#b8893b; --soft:#e5efe9; --danger:#a63d33;
+  --shadow:0 1px 2px rgba(20,40,35,.08),0 6px 18px rgba(20,40,35,.06);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#111715; --card:#1a2321; --ink:#e8efec; --muted:#93a39e; --line:#2a3633;
+    --primary:#3f9b7c; --primary-ink:#06140f; --accent:#d6a85a; --soft:#1f2d29; --danger:#e07a6e;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.4}
+body{padding:env(safe-area-inset-top) 16px calc(84px + env(safe-area-inset-bottom)) 16px;max-width:560px;margin:0 auto}
+header{padding:18px 2px 10px}
+header h1{margin:0;font-size:22px;font-weight:700;letter-spacing:.2px}
+header p{margin:2px 0 0;color:var(--muted);font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0;box-shadow:var(--shadow)}
+.hero{background:var(--primary);color:var(--primary-ink);border:none}
+.eyebrow{font-size:13px;letter-spacing:.4px;text-transform:uppercase;opacity:.85}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 4px}
+.hoca{background:rgba(255,255,255,.14);border-radius:14px;padding:12px}
+.hoca span{display:block;font-size:12px;opacity:.8}
+.hoca b{display:block;font-size:19px;margin-top:2px;overflow-wrap:anywhere}
+.rest{font-size:14px;opacity:.9;margin-top:6px}
+label{display:block;font-size:13px;color:var(--muted);margin:12px 0 4px}
+.hero label{color:inherit;opacity:.85}
+select,input[type=text],input[type=date],textarea{width:100%;font:inherit;font-size:16px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);min-height:48px}
+.hero select,.hero input{background:rgba(255,255,255,.95);color:#1d2927;border-color:transparent}
+button{font:inherit;cursor:pointer;border:none;border-radius:14px;min-height:50px;padding:0 18px;font-weight:600}
+.btn-main{width:100%;margin-top:16px;background:#fff;color:var(--primary);font-size:18px;min-height:56px}
+.btn-main:disabled{opacity:.5}
+.btn{background:var(--soft);color:var(--primary)}
+.btn.danger{background:transparent;color:var(--danger);border:1px solid var(--danger)}
+.btn.solid{background:var(--primary);color:var(--primary-ink)}
+.row{display:flex;gap:10px}.row>*{flex:1}
+details{margin-top:12px}summary{cursor:pointer;font-size:14px;opacity:.9;padding:6px 0}
+h2{font-size:15px;margin:22px 4px 6px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.list{list-style:none;margin:0;padding:0}
+.list li{display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.list li:first-child{border-top:none}
+.num{flex:none;min-width:44px;height:44px;border-radius:12px;background:var(--soft);color:var(--primary);display:grid;place-items:center;font-weight:700}
+.list .who{flex:1;min-width:0}.list .who b{display:block;overflow-wrap:anywhere}
+.list .who small{color:var(--muted)}
+.tag{font-size:12px;padding:2px 8px;border-radius:99px;background:var(--soft);color:var(--primary);white-space:nowrap}
+.stat{padding:12px 0;border-top:1px solid var(--line)}.stat:first-child{border-top:none}
+.stat .top{display:flex;justify-content:space-between;gap:8px}
+.bar{height:8px;border-radius:99px;background:var(--soft);margin:8px 0 4px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--primary);border-radius:99px}
+.muted{color:var(--muted);font-size:14px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding:6px 8px calc(6px + env(safe-area-inset-bottom));z-index:5}
+nav button{flex:1;background:none;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;min-height:52px;border-radius:12px}
+nav button.on{color:var(--primary);background:var(--soft)}
+nav svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));background:#1d2927;color:#fff;padding:12px 14px;border-radius:14px;display:flex;gap:12px;align-items:center;justify-content:space-between;z-index:20;max-width:528px;margin:0 auto}
+.toast button{background:none;color:#f0c987;min-height:36px;padding:0 8px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:30;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+.sheet h3{margin:0 0 4px}
+.rules li{margin:6px 0}
+.empty{text-align:center;color:var(--muted);padding:24px 8px}
+.warn{color:var(--accent);font-size:14px;margin-top:8px}
+</style>
+</head>
+<body>
+<header><h1>Cenaze Takip</h1><p id="sub">Yıkama sırası</p></header>
+<main id="app"></main>
+<nav id="nav">
+  <button data-tab="sira"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Sıra</button>
+  <button data-tab="gecmis"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Geçmiş</button>
+  <button data-tab="hocalar"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3-5.5 6.5-5.5s5.9 1.9 6.5 5.5M16 5a3 3 0 0 1 0 6M18 15c2 .6 3.2 2.2 3.5 5"/></svg>Hocalar</button>
+</nav>
+<div id="layer"></div>
+
+<script>
+'use strict';
+const KEY='cenazeTakip.v1';
+const uid=()=>Math.random().toString(36).slice(2,10);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const todayISO=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const fmt=iso=>iso?iso.split('-').reverse().join('.'):'—';
+
+function seed(){
+  const past=[['2026-11-06','Niyazi Tok','Neşet Kaplan'],['2026-11-12','Neşet Kaplan','Hasan Göndüz'],
+              ['2026-11-16','Hasan Göndüz','Niyazi Tok'],['2026-11-17','Niyazi Tok','Neşet Kaplan']];
+  return {v:1,hocalar:['Hasan Göndüz','Niyazi Tok','Neşet Kaplan','','',''],
+    rows:past.map(([date,h1,h2])=>({id:uid(),date,name:'(önceki kayıt)',absent:'',h1,h2,note:'Geçmiş kayıt'})),
+    cur:{absent:'',o1:'',o2:'',name:'',date:''}};
+}
+let state;
+function load(){
+  try{const s=localStorage.getItem(KEY);if(s){const o=JSON.parse(s);if(o&&o.rows&&o.hocalar){state=o;return}}}catch(e){}
+  state=seed();
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+let tab='sira', mem=null;
+
+const names=()=>state.hocalar.filter(Boolean);
+
+/* Excel'deki dağıtım kuralı: en az yıkayan önce; eşitse en eski yıkayan; sonra satır toplamı; sonra liste sırası */
+function pick(pairs,hocalar,absent){
+  const c=[];
+  hocalar.forEach((h,idx)=>{
+    if(!h||h===absent)return;
+    let cnt=0,last=0,sum=0;
+    pairs.forEach((p,i)=>{ if(p[0]===h||p[1]===h){cnt++;last=i+1;sum+=i+1} });
+    c.push({h,cnt,last,sum,idx});
+  });
+  c.sort((a,b)=>a.cnt-b.cnt||a.last-b.last||a.sum-b.sum||a.idx-b.idx);
+  return [c[0]?c[0].h:'-',c[1]?c[1].h:'-'];
+}
+function sanitizeCur(){
+  const n=names(),c=state.cur;
+  if(c.absent&&!n.includes(c.absent))c.absent='';
+  if(c.o1&&(!n.includes(c.o1)||c.o1===c.absent))c.o1='';
+  if(c.o2&&(!n.includes(c.o2)||c.o2===c.absent))c.o2='';
+  if(c.o1&&c.o1===c.o2)c.o2='';
+}
+function histPairs(){return state.rows.map(r=>[r.h1,r.h2])}
+function curPair(){
+  sanitizeCur();
+  const auto=pick(histPairs(),state.hocalar,state.cur.absent);
+  let a=state.cur.o1||auto[0], b=state.cur.o2||auto[1];
+  if(a===b){ // elle seçim otomatik olanla çakışırsa otomatik adayı değiştir
+    const alt=names().find(x=>x!==a&&x!==state.cur.absent); b=alt||'-';
+  }
+  return [a,b];
+}
+function upcoming(k){
+  const acc=histPairs().concat([curPair()]), out=[];
+  for(let i=0;i<k;i++){const p=pick(acc,state.hocalar,'');out.push(p);acc.push(p)}
+  return out;
+}
+
+/* ---------- görünüm ---------- */
+function render(){
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+  $('#sub').textContent={sira:'Yıkama sırası',gecmis:'Yıkanan cenazeler',hocalar:'Hocalar ve paylar'}[tab];
+  $('#app').innerHTML={sira:viewSira,gecmis:viewGecmis,hocalar:viewHocalar}[tab]();
+  window.scrollTo(0,0);
+}
+const $=s=>document.querySelector(s);
+const opts=(list,sel,blank)=>(blank!==undefined?`<option value="">${esc(blank)}</option>`:'')+list.map(n=>`<option value="${esc(n)}"${n===sel?' selected':''}>${esc(n)}</option>`).join('');
+
+function viewSira(){
+  const n=names(), c=state.cur, p=curPair(), num=state.rows.length+1;
+  const rest=n.filter(x=>x!==p[0]&&x!==p[1]&&x!==c.absent);
+  const ok=p[0]!=='-'&&p[1]!=='-';
+  const up=upcoming(5);
+  return `
+  <section class="card hero">
+    <div class="eyebrow">Sıradaki cenaze · ${num}. cenaze</div>
+    <div class="pair">
+      <div class="hoca"><span>1. Hoca</span><b>${esc(p[0])}</b></div>
+      <div class="hoca"><span>2. Hoca</span><b>${esc(p[1])}</b></div>
+    </div>
+    ${rest.length?`<div class="rest">Dinlenen: ${rest.map(esc).join(', ')}</div>`:''}
+    ${c.absent?`<div class="rest">Gelemeyen: ${esc(c.absent)} (bir sonraki cenazede sıraya girer)</div>`:''}
+    <label for="absent">Gelemeyen hoca</label>
+    <select id="absent" data-act="absent">${opts(n,c.absent,'— Yok —')}</select>
+    <details><summary>Hocayı elle değiştir</summary>
+      <div class="row">
+        <div><label>1. Hoca</label><select data-act="o1">${opts(n.filter(x=>x!==c.absent),p[0],'Otomatik')}</select></div>
+        <div><label>2. Hoca</label><select data-act="o2">${opts(n.filter(x=>x!==c.absent),p[1],'Otomatik')}</select></div>
+      </div>
+    </details>
+    <label>Tarih</label><input type="date" id="cdate" value="${esc(c.date||todayISO())}" data-act="date">
+    <label>Merhumun adı (isteğe bağlı)</label><input type="text" id="cname" value="${esc(c.name)}" placeholder="Ad Soyad" data-act="name" autocomplete="off">
+    <button class="btn-main" data-act="done" ${ok?'':'disabled'}>Yıkandı ✓</button>
+    ${ok?'':'<div class="rest">Sıra için en az 2 hoca gerekli (Hocalar sekmesi).</div>'}
+  </section>
+  <h2>Sonraki cenazeler</h2>
+  <section class="card"><ul class="list">
+    ${up.map((q,i)=>`<li><div class="num">${num+1+i}</div><div class="who"><b>${esc(q[0])} &amp; ${esc(q[1])}</b><small>${num+1+i}. cenaze · tahmini</small></div></li>`).join('')}
+  </ul></section>
+  <p class="muted">Sıra, gelemeyen hoca ve yıkanan kayıtlara göre otomatik güncellenir.</p>`;
+}
+
+function viewGecmis(){
+  const rows=state.rows.map((r,i)=>({r,i})).reverse();
+  return `<button class="btn solid" style="width:100%" data-act="addpast">+ Geçmiş kayıt ekle</button>
+  <section class="card">${rows.length?`<ul class="list">${rows.map(({r,i})=>`
+    <li data-act="edit" data-i="${i}" style="cursor:pointer">
+      <div class="num">${i+1}</div>
+      <div class="who"><b>${esc(r.h1)} &amp; ${esc(r.h2)}</b>
+        <small>${fmt(r.date)}${r.name?' · '+esc(r.name):''}${r.absent?' · gelemeyen: '+esc(r.absent):''}</small></div>
+      <span class="tag">Yıkandı</span></li>`).join('')}</ul>`:'<div class="empty">Henüz kayıt yok.</div>'}</section>
+  <p class="muted">Düzenlemek için bir kayda dokunun.</p>`;
+}
+
+function stats(){
+  const n=names(), total=state.rows.reduce((a,r)=>a+(n.includes(r.h1)?1:0)+(n.includes(r.h2)?1:0),0);
+  return n.map(h=>{
+    const mine=state.rows.filter(r=>r.h1===h||r.h2===h);
+    const dates=mine.map(r=>r.date).filter(Boolean).sort();
+    return {h,cnt:mine.length,pay:total?mine.length/total*2:0,last:dates.length?dates[dates.length-1]:'',abs:state.rows.filter(r=>r.absent===h).length+(state.cur.absent===h?1:0)};
+  });
+}
+function viewHocalar(){
+  const st=stats();
+  return `<section class="card">${st.map(s=>`
+    <div class="stat"><div class="top"><b>${esc(s.h)}</b><span>${s.cnt} yıkama</span></div>
+    <div class="bar"><i style="width:${Math.min(100,s.pay*100).toFixed(0)}%"></i></div>
+    <div class="muted">Pay %${(s.pay*100).toFixed(0)} · Son: ${s.last?fmt(s.last):'—'} · Gelemediği: ${s.abs}</div></div>`).join('')||'<div class="empty">Hoca yok.</div>'}</section>
+  <h2>Hoca adları (en fazla 6)</h2>
+  <section class="card">
+    ${state.hocalar.map((h,i)=>`<label>${i+1}. hoca</label><input type="text" value="${esc(h)}" data-act="hname" data-i="${i}" placeholder="Boş" autocomplete="off">`).join('')}
+    <p class="muted">Adı değiştirirseniz geçmiş kayıtlarda da güncellenir. Yeni hoca eklenince sıra kendini yeniden dengeler. Bir adı silerseniz hoca sıradan çıkar, geçmiş kayıtları kalır.</p>
+  </section>
+  <h2>Dağıtım kuralı</h2>
+  <section class="card"><ul class="rules" style="padding-left:18px;margin:0">
+    <li>Her cenazede 2 hoca girer. 3 hocada biri dinlenir; sıra: Hasan+Niyazi → Neşet+Hasan → Niyazi+Neşet → baştan.</li>
+    <li>Sıra en az yıkayana, eşitse en uzun süredir yıkamayana gider.</li>
+    <li>Sırası gelen hoca gidemezse "Gelemeyen hoca"dan seçilir; yerine dinlenen hoca girer.</li>
+    <li>Gelemeyen hoca bir sonraki cenazede tekrar sıraya girer, kimsenin hakkı kaybolmaz.</li>
+  </ul></section>
+  <h2>Veri</h2>
+  <section class="card"><div class="row"><button class="btn" data-act="backup">Yedek al / yükle</button><button class="btn danger" data-act="reset">Sıfırla</button></div></section>`;
+}
+
+/* ---------- işlemler ---------- */
+function toast(msg,undo){
+  const t=document.createElement('div');t.className='toast';
+  t.innerHTML=`<span>${esc(msg)}</span>${undo?'<button>Geri al</button>':''}`;
+  document.body.appendChild(t);
+  const kill=setTimeout(()=>t.remove(),undo?7000:2500);
+  if(undo)t.querySelector('button').onclick=()=>{clearTimeout(kill);t.remove();undo()};
+}
+function snapshot(){return JSON.stringify(state)}
+function restore(s){state=JSON.parse(s);save();render()}
+
+function doneNow(){
+  const p=curPair(); if(p[0]==='-'||p[1]==='-')return;
+  const before=snapshot(), c=state.cur;
+  state.rows.push({id:uid(),date:c.date||todayISO(),name:c.name.trim(),absent:c.absent,h1:p[0],h2:p[1],note:''});
+  state.cur={absent:'',o1:'',o2:'',name:'',date:''};
+  save();render();toast('Kaydedildi: '+p[0]+' & '+p[1],()=>restore(before));
+}
+
+function closeModal(){$('#layer').innerHTML=''}
+function openEdit(i){ // i = -1 → yeni geçmiş kayıt
+  const isNew=i<0, n=names();
+  const r=isNew?{date:todayISO(),name:'',absent:'',h1:n[0]||'',h2:n[1]||'',note:''}:state.rows[i];
+  const all=[...new Set([...n,r.h1,r.h2,r.absent].filter(Boolean))];
+  $('#layer').innerHTML=`<div class="modal" data-act="mclose"><div class="sheet" onclick="event.stopPropagation()">
+    <h3>${isNew?'Geçmiş kayıt ekle':(i+1)+'. cenaze'}</h3>
+    <div class="row"><div><label>1. Hoca</label><select id="e1">${opts(all,r.h1)}</select></div>
+    <div><label>2. Hoca</label><select id="e2">${opts(all,r.h2)}</select></div></div>
+    <label>Gelemeyen hoca</label><select id="eabs">${opts(all,r.absent,'— Yok —')}</select>
+    <label>Tarih</label><input type="date" id="edate" value="${esc(r.date)}">
+    <label>Merhumun adı</label><input type="text" id="ename" value="${esc(r.name)}">
+    <label>Not</label><input type="text" id="enote" value="${esc(r.note)}">
+    <div class="warn" id="ewarn"></div>
+    <div class="row" style="margin-top:16px">
+      ${isNew?'':'<button class="btn danger" data-act="edel" data-i="'+i+'">Sil</button>'}
+      <button class="btn" data-act="mclose">Vazgeç</button>
+      <button class="btn solid" data-act="esave" data-i="${i}">Kaydet</button>
+    </div></div></div>`;
+}
+function saveEdit(i){
+  const h1=$('#e1').value,h2=$('#e2').value;
+  if(h1===h2){$('#ewarn').textContent='1. ve 2. hoca aynı kişi olamaz.';return}
+  const before=snapshot();
+  const rec={date:$('#edate').value,name:$('#ename').value.trim(),absent:$('#eabs').value,h1,h2,note:$('#enote').value.trim()};
+  if(i<0)state.rows.push({id:uid(),...rec});else Object.assign(state.rows[i],rec);
+  save();closeModal();render();toast('Kaydedildi',()=>restore(before));
+}
+function delEdit(i){
+  const before=snapshot();state.rows.splice(i,1);save();closeModal();render();toast('Kayıt silindi',()=>restore(before));
+}
+function renameHoca(i,val){
+  val=val.trim();const old=state.hocalar[i];
+  if(val===old)return;
+  if(val&&state.hocalar.some((x,k)=>k!==i&&x===val)){toast('Bu isim zaten var');render();return}
+  if(old&&val){
+    state.rows.forEach(r=>{if(r.h1===old)r.h1=val;if(r.h2===old)r.h2=val;if(r.absent===old)r.absent=val});
+    ['absent','o1','o2'].forEach(k=>{if(state.cur[k]===old)state.cur[k]=val});
+  }
+  state.hocalar[i]=val;sanitizeCur();save();render();
+}
+function openBackup(){
+  $('#layer').innerHTML=`<div class="modal" data-act="mclose"><div class="sheet" onclick="event.stopPropagation()">
+    <h3>Yedek</h3><p class="muted">Aşağıdaki metni kopyalayıp saklayın. Başka telefonda yüklemek için yapıştırıp "Yükle"ye basın.</p>
+    <textarea id="bk" rows="8">${esc(JSON.stringify(state))}</textarea>
+    <div class="row" style="margin-top:14px"><button class="btn" data-act="mclose">Kapat</button><button class="btn solid" data-act="bkload">Yükle</button></div>
+    <div class="warn" id="bkw"></div></div></div>`;
+}
+function openReset(){
+  $('#layer').innerHTML=`<div class="modal" data-act="mclose"><div class="sheet" onclick="event.stopPropagation()">
+    <h3>Her şey silinsin mi?</h3><p class="muted">Tüm kayıtlar silinir ve başlangıç verisi (Excel'deki 4 geçmiş kayıt) yeniden yüklenir.</p>
+    <div class="row"><button class="btn" data-act="mclose">Vazgeç</button><button class="btn danger" data-act="doreset">Sıfırla</button></div></div></div>`;
+}
+
+document.addEventListener('click',e=>{
+  const nb=e.target.closest('#nav button'); if(nb){tab=nb.dataset.tab;render();return}
+  const t=e.target.closest('[data-act]'); if(!t)return;
+  const a=t.dataset.act, i=t.dataset.i!==undefined?+t.dataset.i:null;
+  if(a==='done')doneNow();
+  else if(a==='edit')openEdit(i);
+  else if(a==='addpast')openEdit(-1);
+  else if(a==='esave')saveEdit(i);
+  else if(a==='edel')delEdit(i);
+  else if(a==='mclose'){ if(t.classList.contains('modal')&&e.target!==t)return; closeModal() }
+  else if(a==='backup')openBackup();
+  else if(a==='reset')openReset();
+  else if(a==='doreset'){state=seed();save();closeModal();render();toast('Sıfırlandı')}
+  else if(a==='bkload'){
+    try{const o=JSON.parse($('#bk').value);if(!o.rows||!o.hocalar)throw 0;state=o;save();closeModal();render();toast('Yüklendi')}
+    catch(x){$('#bkw').textContent='Geçersiz yedek metni.'}
+  }
+});
+document.addEventListener('change',e=>{
+  const t=e.target.closest('[data-act]'); if(!t)return;
+  const a=t.dataset.act, c=state.cur;
+  if(a==='absent'){c.absent=t.value;c.o1='';c.o2='';save();render()}
+  else if(a==='o1'){c.o1=t.value;save();render()}
+  else if(a==='o2'){c.o2=t.value;save();render()}
+  else if(a==='date'){c.date=t.value;save()}
+  else if(a==='name'){c.name=t.value;save()}
+  else if(a==='hname')renameHoca(+t.dataset.i,t.value);
+});
+document.addEventListener('input',e=>{ if(e.target.dataset.act==='name'){state.cur.name=e.target.value;save()} });
+
+load();render();
+</script>
+</body>
+</html>

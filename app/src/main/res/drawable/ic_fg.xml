@@ -1,0 +1,9 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <!-- iki hoca ve sıra çizgileri -->
+    <path android:fillColor="#FFFFFF" android:pathData="M40,40m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M68,40m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M28,62c1,-8 6,-12 12,-12s11,4 12,12z"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M56,62c1,-8 6,-12 12,-12s11,4 12,12z"/>
+    <path android:fillColor="#E0B866" android:pathData="M30,70h48v4h-48z"/>
+    <path android:fillColor="#E0B866" android:pathData="M30,78h32v4h-32z"/>
+</vector>
