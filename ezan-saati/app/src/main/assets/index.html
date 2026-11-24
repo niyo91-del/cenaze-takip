@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#15395c">
+<title>Ezan Saati</title>
+<style>
+/* Düzen: tek sütun, telefon önce. Lacivert gün kartı, altın rengi sıradaki vakit. Üç sekme: Bugün, Günlük, Aylık. */
+:root{
+  --bg:#e9f0f5; --card:#ffffff; --ink:#11263b; --muted:#566b7e; --line:#d3dfe8;
+  --hero:#15395c; --hero-ink:#eaf3fa; --hero-soft:rgba(255,255,255,.14);
+  --accent:#d99a22; --accent-ink:#2b1c00; --soft:#dde9f2; --field:#f6f9fb; --err:#b3261e;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  --arab:"Noto Naskh Arabic","Amiri","Traditional Arabic","Geeza Pro","Arabic Typesetting",serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0a1521; --card:#112133; --ink:#e5eef6; --muted:#8aa0b4; --line:#1e3248;
+    --hero:#173c61; --accent:#e6ad46; --soft:#18304a; --field:#0e1c2c; --err:#ff8f80; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0a1521; --card:#112133; --ink:#e5eef6; --muted:#8aa0b4; --line:#1e3248;
+  --hero:#173c61; --accent:#e6ad46; --soft:#18304a; --field:#0e1c2c; --err:#ff8f80; color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.45;
+  padding-block:12px 36px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.col{display:flex;flex-direction:column;gap:14px}
+button,select,input{font:inherit;color:inherit}
+.de{display:block;font-size:.78em;font-weight:400;opacity:.78;line-height:1.25}
+.seg{display:grid;background:var(--soft);border-radius:14px;padding:4px;gap:4px}
+.seg button{border:0;background:none;min-height:46px;border-radius:11px;font-weight:600;color:var(--muted);padding:2px 4px}
+.seg button[aria-selected="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.14)}
+#langs{grid-template-columns:1.3fr 1fr 1fr}
+#langs button{min-height:40px;font-size:14px}
+#tabs{grid-template-columns:repeat(3,1fr)}
+select{width:100%;min-height:48px;border-radius:12px;border:1px solid var(--line);background:var(--card);padding:0 12px;font-weight:600}
+.hero{background:var(--hero);color:var(--hero-ink);border-radius:22px;padding:18px 18px 14px;display:flex;flex-direction:column;gap:6px}
+.hero .lbl{font-size:13px;letter-spacing:.06em;text-transform:uppercase;opacity:.85}
+.hero .next{font-size:34px;font-weight:700;line-height:1.1}
+.hero .next .de{font-size:.45em;opacity:.85}
+.hero .at{font-size:15px;opacity:.92;font-variant-numeric:tabular-nums}
+.count{font-size:30px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px}
+.arc{width:100%;height:auto;margin-top:4px}
+.date{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
+.date button,.nav button{border:0;min-width:48px;min-height:48px;border-radius:12px;background:var(--hero-soft);color:var(--hero-ink);font-size:22px}
+.date .mid{text-align:center;font-weight:600;min-width:0}
+.date .mid small{display:block;font-weight:400;opacity:.85}
+.list{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 16px;min-height:60px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.row .n{font-size:18px;font-weight:600}
+.row .t{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.row.past{color:var(--muted)}
+.row.past .n,.row.past .t{font-weight:500}
+.row.now{background:var(--accent);color:var(--accent-ink)}
+.row.now .de{opacity:.85}
+.pill{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-left:8px;vertical-align:middle}
+.box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px}
+.box h2{margin:0 0 8px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.box h2 .de{display:inline;margin-left:6px;font-size:1em}
+.box h2 .de::before{content:"· "}
+.box p{margin:0 0 8px}
+.box p:last-child{margin-bottom:0}
+.ar{direction:rtl;text-align:right;font-family:var(--arab);font-size:27px;line-height:1.9;margin:0 0 10px}
+.ref{font-size:13px;color:var(--muted);margin-top:6px}
+.qibla{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.note{color:var(--muted);font-size:13px;margin:0 4px}
+.special{background:var(--accent);color:var(--accent-ink);border-radius:18px;padding:12px 16px;font-weight:600}
+.special .de{opacity:.85}
+.rec h3{margin:0 0 2px;font-size:20px}
+.meta{font-size:13px;color:var(--muted);margin-bottom:8px}
+.rec ul,.rec ol{margin:0 0 8px;padding-left:20px}
+.rec li{margin:4px 0}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.nav button{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.nav .ttl{text-align:center;font-weight:700;min-width:0}
+.custom{display:grid;gap:8px}
+.custom label{font-size:13px;color:var(--muted)}
+.custom input{width:100%;min-height:46px;border-radius:12px;border:1px solid var(--line);background:var(--field);padding:0 12px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn{border:0;min-height:48px;border-radius:12px;background:var(--hero);color:var(--hero-ink);font-weight:600;padding:0 16px}
+.err{color:var(--err);font-size:14px;min-height:1em}
+.tw{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:18px}
+table{border-collapse:collapse;width:100%;min-width:440px;font-variant-numeric:tabular-nums}
+th,td{padding:10px 8px;text-align:center;font-size:15px;white-space:nowrap}
+th{font-size:11px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line);line-height:1.2}
+th .de{font-size:1em;opacity:.8}
+td:first-child,th:first-child{text-align:left;padding-left:14px;position:sticky;left:0;background:var(--card)}
+tr.today td{background:var(--accent);color:var(--accent-ink);font-weight:700}
+tr+tr td{border-top:1px solid var(--line)}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <div class="seg" id="langs" role="tablist" aria-label="Dil / Sprache">
+    <button data-l="both">Türkçe · Deutsch</button><button data-l="tr">Türkçe</button><button data-l="de">Deutsch</button>
+  </div>
+  <div class="seg" id="tabs" role="tablist">
+    <button data-t="today"></button><button data-t="daily"></button><button data-t="month"></button>
+  </div>
+  <select id="city" aria-label="Şehir / Stadt"></select>
+  <div class="box custom" id="custom" hidden>
+    <div><label for="cName" id="lName"></label><input id="cName" type="text" autocomplete="off"></div>
+    <div class="two">
+      <div><label for="cLat" id="lLat"></label><input id="cLat" type="text" inputmode="decimal" placeholder="50.7374"></div>
+      <div><label for="cLon" id="lLon"></label><input id="cLon" type="text" inputmode="decimal" placeholder="7.0982"></div>
+    </div>
+    <div class="err" id="cErr"></div>
+    <button class="btn" id="cSave"></button>
+  </div>
+
+  <section id="vToday" class="col"></section>
+  <section id="vDaily" class="col" hidden></section>
+  <section id="vMonth" class="col" hidden></section>
+</div>
+
+<script>
+'use strict';
+/* ===================== yerler ===================== */
+const PLACES=[
+ ['Almanya / Deutschland',[['Berlin',52.52,13.405],['Hamburg',53.5511,9.9937],['München',48.1351,11.582],['Köln',50.9375,6.9603],['Frankfurt',50.1109,8.6821],['Stuttgart',48.7758,9.1829],['Düsseldorf',51.2277,6.7735],['Dortmund',51.5136,7.4653],['Essen',51.4556,7.0116],['Bremen',53.0793,8.8017],['Hannover',52.3759,9.732],['Nürnberg',49.4521,11.0767],['Leipzig',51.3397,12.3731],['Duisburg',51.4344,6.7623],['Mannheim',49.4875,8.466]],'Europe/Berlin'],
+ ['Türkiye',[['İstanbul',41.0082,28.9784],['Ankara',39.9334,32.8597],['İzmir',38.4237,27.1428],['Bursa',40.1885,29.061],['Antalya',36.8969,30.7133],['Konya',37.8746,32.4932],['Adana',37.0,35.3213],['Gaziantep',37.0662,37.3833],['Kayseri',38.7312,35.4787],['Trabzon',41.0027,39.7168],['Samsun',41.2867,36.33],['Diyarbakır',37.9144,40.2306],['Erzurum',39.9,41.27],['Eskişehir',39.7667,30.5256],['Mersin',36.8,34.6333],['Van',38.4891,43.4089],['Şanlıurfa',37.1591,38.7969],['Malatya',38.3552,38.3095],['Denizli',37.7765,29.0864],['Sivas',39.7477,37.0179]],'Europe/Istanbul'],
+ ['Diğer / Weitere',[['Wien',48.2082,16.3738,'Europe/Vienna'],['Zürich',47.3769,8.5417,'Europe/Zurich'],['Amsterdam',52.3676,4.9041,'Europe/Amsterdam'],['Brüssel',50.8503,4.3517,'Europe/Brussels'],['Paris',48.8566,2.3522,'Europe/Paris'],['London',51.5072,-0.1276,'Europe/London']],null]
+];
+const CITIES=[];
+PLACES.forEach(([g,list,tz])=>list.forEach(c=>CITIES.push({name:c[0],lat:c[1],lon:c[2],tz:c[3]||tz,group:g})));
+const deviceTz=(()=>{try{return Intl.DateTimeFormat().resolvedOptions().timeZone||'Europe/Berlin'}catch(e){return 'Europe/Berlin'}})();
+
+/* ===================== hesap (Diyanet yöntemi: imsak 18°, yatsı 17°, düzeltmeler dk) ===================== */
+const R=Math.PI/180, sin=d=>Math.sin(d*R), cos=d=>Math.cos(d*R), tan=d=>Math.tan(d*R);
+const asin=x=>Math.asin(x)/R, acos=x=>Math.acos(x)/R, atan2=(y,x)=>Math.atan2(y,x)/R, acot=x=>Math.atan(1/x)/R;
+const fa=a=>a-360*Math.floor(a/360), fh=h=>h-24*Math.floor(h/24);
+function julian(y,m,d){if(m<=2){y-=1;m+=12}const A=Math.floor(y/100),B=2-A+Math.floor(A/4);return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524.5}
+function sunPos(jd){const D=jd-2451545.0,g=fa(357.529+0.98560028*D),q=fa(280.459+0.98564736*D),L=fa(q+1.915*sin(g)+0.020*sin(2*g)),e=23.439-0.00000036*D;
+  const RA=fh(atan2(cos(e)*sin(L),cos(L))/15);return{decl:asin(sin(e)*sin(L)),eqt:q/15-RA}}
+function calcDay(y,m,d,lat,lon){
+  const jd=julian(y,m,d)-lon/360;
+  const mid=t=>fh(12-sunPos(jd+t).eqt);
+  const ang=(a,t,ccw)=>{const dec=sunPos(jd+t).decl,noon=mid(t),x=(-sin(a)-sin(dec)*sin(lat))/(cos(dec)*cos(lat));return noon+(ccw?-1:1)*acos(x)/15};
+  const asr=(f,t)=>{const dec=sunPos(jd+t).decl;return ang(-acot(f+tan(Math.abs(lat-dec))),t,false)};
+  let fajr=ang(18,5/24,true),sunrise=ang(0.833,6/24,true),dhuhr=mid(12/24),asrT=asr(1,13/24),sunset=ang(0.833,18/24,false),isha=ang(17,18/24,false);
+  const night=fh(sunrise-sunset);
+  if(isNaN(fajr)||fh(sunrise-fajr)>18/60*night)fajr=sunrise-18/60*night;
+  if(isNaN(isha)||fh(isha-sunset)>17/60*night)isha=sunset+17/60*night;
+  const raw=[fajr,sunrise-7/60,dhuhr+5/60,asrT+4/60,sunset+7/60,isha];
+  const base=Date.UTC(y,m-1,d);
+  return raw.map(h=>Math.round((base+(h-lon/15)*3600000)/60000)*60000);
+}
+function qiblaDeg(lat,lon){const p2=21.4225,dl=39.8262-lon;return fa(atan2(sin(dl),cos(lat)*tan(p2)-sin(lat)*cos(dl)))}
+
+/* ===================== metinler ===================== */
+const PN=[['İmsak','Fadschr'],['Güneş','Sonnenaufgang'],['Öğle','Dhuhr'],['İkindi','Asr'],['Akşam','Maghrib'],['Yatsı','Ischa']];
+const MTR=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+const MDE=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const WTR=['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
+const WDE=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+const DIR_TR=['kuzey','kuzeydoğu','doğu','güneydoğu','güney','güneybatı','batı','kuzeybatı'];
+const DIR_DE=['Norden','Nordosten','Osten','Südosten','Süden','Südwesten','Westen','Nordwesten'];
+
+const AYAHS=[
+ {ar:'أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ',tr:'Biliniz ki kalpler ancak Allah\'ı anmakla huzur bulur.',de:'Wahrlich, im Gedenken Gottes finden die Herzen Ruhe.',ref:'Ra\'d 13:28'},
+ {ar:'فَإِنَّ مَعَ الْعُسْرِ يُسْرًا ۝ إِنَّ مَعَ الْعُسْرِ يُسْرًا',tr:'Elbette zorluğun yanında bir kolaylık vardır. Gerçekten zorlukla beraber bir kolaylık vardır.',de:'Wahrlich, mit der Schwierigkeit kommt Erleichterung. Wahrlich, mit der Schwierigkeit kommt Erleichterung.',ref:'İnşirâh 94:5-6'},
+ {ar:'يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ ۚ إِنَّ اللَّهَ مَعَ الصَّابِرِينَ',tr:'Ey iman edenler! Sabır ve namazla yardım dileyin. Şüphesiz Allah sabredenlerle beraberdir.',de:'Ihr Gläubigen! Sucht Hilfe in Geduld und Gebet. Wahrlich, Gott ist mit den Geduldigen.',ref:'Bakara 2:153'},
+ {ar:'لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا',tr:'Allah hiç kimseye gücünün yeteceğinden fazlasını yüklemez.',de:'Gott fordert von keiner Seele mehr, als sie zu leisten vermag.',ref:'Bakara 2:286'},
+ {ar:'وَمَنْ يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ',tr:'Kim Allah\'a tevekkül ederse, O ona yeter.',de:'Wer auf Gott vertraut, dem genügt Er.',ref:'Talâk 65:3'},
+ {ar:'لَا تَقْنَطُوا مِنْ رَحْمَةِ اللَّهِ ۚ إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا',tr:'Allah\'ın rahmetinden ümidinizi kesmeyin. Şüphesiz Allah bütün günahları bağışlar.',de:'Verzweifelt nicht an der Barmherzigkeit Gottes. Wahrlich, Gott vergibt alle Sünden.',ref:'Zümer 39:53'},
+ {ar:'قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ',tr:'De ki: O Allah birdir. Allah sameddir (her şey O\'na muhtaçtır). O doğurmamış ve doğurulmamıştır. Hiçbir şey O\'na denk değildir.',de:'Sprich: Er ist Gott, der Eine, Gott, der Undurchdringliche. Er zeugt nicht und ist nicht gezeugt, und keiner ist Ihm gleich.',ref:'İhlâs 112'},
+ {ar:'وَقَضَىٰ رَبُّكَ أَلَّا تَعْبُدُوا إِلَّا إِيَّاهُ وَبِالْوَالِدَيْنِ إِحْسَانًا',tr:'Rabbin, yalnız O\'na kulluk etmenizi ve anne babaya iyilik etmenizi emretti.',de:'Dein Herr hat geboten, dass ihr nur Ihm dient und zu den Eltern gütig seid.',ref:'İsrâ 17:23'},
+ {ar:'إِنَّ أَكْرَمَكُمْ عِنْدَ اللَّهِ أَتْقَاكُمْ',tr:'Allah katında en değerliniz, takvâda en ileri olanınızdır.',de:'Der Angesehenste von euch bei Gott ist der Gottesfürchtigste unter euch.',ref:'Hucurât 49:13'},
+ {ar:'إِنَّ اللَّهَ يَأْمُرُ بِالْعَدْلِ وَالْإِحْسَانِ وَإِيتَاءِ ذِي الْقُرْبَىٰ',tr:'Allah adaleti, iyiliği ve akrabaya yardım etmeyi emreder.',de:'Gott gebietet Gerechtigkeit, Güte und Freigebigkeit gegenüber den Verwandten.',ref:'Nahl 16:90'},
+ {ar:'فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ',tr:'Öyleyse beni anın ki ben de sizi anayım. Bana şükredin, nankörlük etmeyin.',de:'Gedenkt Meiner, so gedenke Ich eurer. Seid Mir dankbar und undankbar nicht.',ref:'Bakara 2:152'},
+ {ar:'لَئِنْ شَكَرْتُمْ لَأَزِيدَنَّكُمْ',tr:'Andolsun, şükrederseniz size (nimetimi) mutlaka artırırım.',de:'Wenn ihr dankbar seid, werde Ich euch gewiss mehr geben.',ref:'İbrâhîm 14:7'},
+ {ar:'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ',tr:'Allah, kendisinden başka ilah olmayandır. O diridir, her şeyi ayakta tutandır.',de:'Gott, es gibt keinen Gott außer Ihm, dem Lebendigen, dem Beständigen.',ref:'Bakara 2:255 (Âyetü\'l-Kürsî\'den)'},
+ {ar:'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',tr:'Hamd, âlemlerin Rabbi Allah\'a mahsustur.',de:'Alles Lob gebührt Gott, dem Herrn der Welten.',ref:'Fâtiha 1:2'},
+ {ar:'ادْعُونِي أَسْتَجِبْ لَكُمْ',tr:'Bana dua edin, size karşılık vereyim.',de:'Ruft Mich an, so erhöre Ich euch.',ref:'Mü\'min 40:60'},
+ {ar:'فَإِنِّي قَرِيبٌ ۖ أُجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ',tr:'Şüphesiz ben çok yakınım. Bana dua edenin duasına karşılık veririm.',de:'Ich bin nahe. Ich erhöre den Ruf des Rufenden, wenn er Mich anruft.',ref:'Bakara 2:186'},
+ {ar:'فَمَنْ يَعْمَلْ مِثْقَالَ ذَرَّةٍ خَيْرًا يَرَهُ ۝ وَمَنْ يَعْمَلْ مِثْقَالَ ذَرَّةٍ شَرًّا يَرَهُ',tr:'Kim zerre kadar hayır işlerse onu görür. Kim zerre kadar kötülük işlerse onu görür.',de:'Wer das Gewicht eines Stäubchens an Gutem tut, wird es sehen. Und wer das Gewicht eines Stäubchens an Bösem tut, wird es sehen.',ref:'Zilzâl 99:7-8'},
+ {ar:'وَالْعَصْرِ ۝ إِنَّ الْإِنسَانَ لَفِي خُسْرٍ ۝ إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ وَتَوَاصَوْا بِالْحَقِّ وَتَوَاصَوْا بِالصَّبْرِ',tr:'Asra yemin olsun ki insan gerçekten ziyandadır. Ancak iman edip salih amel işleyenler, birbirlerine hakkı ve sabrı tavsiye edenler hariç.',de:'Beim Nachmittag! Der Mensch ist wahrlich im Verlust, außer denen, die glauben und Gutes tun und einander zur Wahrheit und zur Geduld mahnen.',ref:'Asr 103:1-3'},
+ {ar:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',tr:'Rabbimiz, bize dünyada da iyilik ver, ahirette de iyilik ver ve bizi ateş azabından koru.',de:'Unser Herr, gib uns im Diesseits Gutes und im Jenseits Gutes und bewahre uns vor der Strafe des Feuers.',ref:'Bakara 2:201'},
+ {ar:'وَلَا تَهِنُوا وَلَا تَحْزَنُوا وَأَنتُمُ الْأَعْلَوْنَ إِن كُنتُم مُّؤْمِنِينَ',tr:'Gevşemeyin, üzülmeyin. Eğer inanıyorsanız üstün olan sizsiniz.',de:'Lasst nicht nach und seid nicht traurig. Ihr seid die Überlegenen, wenn ihr gläubig seid.',ref:'Âl-i İmrân 3:139'}
+];
+const HADITHS=[
+ {tr:'Ameller niyetlere göredir.',de:'Die Taten richten sich nach den Absichten.',src:'Buhârî, Müslim'},
+ {tr:'Sizin en hayırlınız, Kur\'an\'ı öğrenen ve öğretendir.',de:'Der Beste unter euch ist, wer den Koran lernt und lehrt.',src:'Buhârî'},
+ {tr:'Kolaylaştırın, zorlaştırmayın; müjdeleyin, nefret ettirmeyin.',de:'Macht es leicht und nicht schwer; verkündet frohe Botschaft und schreckt nicht ab.',src:'Buhârî, Müslim'},
+ {tr:'Hiçbiriniz, kendisi için istediğini kardeşi için de istemedikçe (kâmil manada) iman etmiş olmaz.',de:'Keiner von euch glaubt (vollkommen), bis er für seinen Bruder wünscht, was er für sich selbst wünscht.',src:'Buhârî, Müslim'},
+ {tr:'Kim Allah\'a ve ahiret gününe inanıyorsa ya hayır söylesin ya da sussun.',de:'Wer an Gott und den Jüngsten Tag glaubt, soll Gutes sagen oder schweigen.',src:'Buhârî, Müslim'},
+ {tr:'Müslüman, elinden ve dilinden diğer Müslümanların güvende olduğu kimsedir.',de:'Muslim ist, vor dessen Zunge und Hand die anderen Muslime sicher sind.',src:'Buhârî, Müslim'},
+ {tr:'Din kardeşine tebessüm etmen sadakadır.',de:'Dass du deinem Bruder zulächelst, ist Almosen.',src:'Tirmizî'},
+ {tr:'Temizlik imanın yarısıdır.',de:'Die Reinheit ist die Hälfte des Glaubens.',src:'Müslim'},
+ {tr:'İnsanlara merhamet etmeyene Allah merhamet etmez.',de:'Wer sich der Menschen nicht erbarmt, dessen erbarmt sich Gott nicht.',src:'Buhârî, Müslim'},
+ {tr:'Allah sizin suretlerinize ve mallarınıza bakmaz; kalplerinize ve amellerinize bakar.',de:'Gott schaut nicht auf eure Gestalt und euren Besitz, sondern auf eure Herzen und Taten.',src:'Müslim'},
+ {tr:'Cebrail bana komşu hakkında o kadar tavsiyede bulundu ki, onu mirasçı kılacak sandım.',de:'Gabriel mahnte mich so sehr zur Fürsorge für den Nachbarn, dass ich meinte, er werde ihn zum Erben machen.',src:'Buhârî, Müslim'},
+ {tr:'Yeryüzündekilere merhamet edin ki gökteki de size merhamet etsin.',de:'Erbarmt euch derer auf der Erde, so erbarmt sich euer derer im Himmel.',src:'Tirmizî, Ebû Dâvûd'},
+ {tr:'Sizin en hayırlınız ahlâkça en güzel olanınızdır.',de:'Der Beste unter euch ist, wer den schönsten Charakter hat.',src:'Buhârî, Müslim'},
+ {tr:'Dünyada bir garip, ya da bir yolcu gibi ol.',de:'Sei in dieser Welt wie ein Fremder oder ein Reisender.',src:'Buhârî'},
+ {tr:'İki nimet vardır ki insanların çoğu onlarda aldanmıştır: sağlık ve boş vakit.',de:'Zwei Gaben gibt es, bei denen viele Menschen betrogen werden: Gesundheit und freie Zeit.',src:'Buhârî'},
+ {tr:'Güzel söz sadakadır.',de:'Ein gutes Wort ist Almosen.',src:'Buhârî, Müslim'},
+ {tr:'İnsanlara teşekkür etmeyen, Allah\'a şükretmiş olmaz.',de:'Wer den Menschen nicht dankt, dankt Gott nicht.',src:'Ebû Dâvûd, Tirmizî'},
+ {tr:'Kim ilim öğrenmek için bir yola girerse, Allah ona cennetin yolunu kolaylaştırır.',de:'Wer einen Weg beschreitet, um Wissen zu suchen, dem erleichtert Gott den Weg ins Paradies.',src:'Müslim'},
+ {tr:'Beş vakit namaz, büyük günahlardan kaçınıldığı sürece, aralarındaki küçük günahlara kefarettir.',de:'Die fünf täglichen Gebete sind eine Sühne für die Fehler zwischen ihnen, solange man große Sünden meidet.',src:'Müslim'},
+ {tr:'Kuvvetli mümin, zayıf müminden Allah katında daha hayırlı ve daha sevimlidir; ikisinde de hayır vardır.',de:'Der starke Gläubige ist besser und Gott lieber als der schwache Gläubige, doch in beiden liegt Gutes.',src:'Müslim'}
+];
+const TIPS=[
+ {tr:'Ezanı duyunca müezzinin söylediklerini tekrar etmek, ardından salavat getirip ezan duasını okumak sünnettir.',de:'Wenn man den Gebetsruf hört, ist es Sunna, die Worte des Muezzins zu wiederholen, den Segen auf den Propheten zu sprechen und das Bittgebet nach dem Adhan zu lesen.'},
+ {tr:'Ezan ile kamet arasında yapılan dua reddedilmez. Bu arayı dua ile değerlendirin.',de:'Das Bittgebet zwischen Adhan und Iqama wird nicht abgewiesen. Nutzen Sie diese Zeit zum Bittgebet.',src:'Ebû Dâvûd, Tirmizî'},
+ {tr:'Abdest alırken ve günlük hayatta suyu israf etmeyin.',de:'Gehen Sie bei der Gebetswaschung und im Alltag sparsam mit Wasser um.'},
+ {tr:'Günde yüz defa "Sübhânallâhi ve bihamdih" diyen kimsenin hataları, deniz köpüğü kadar çok olsa da bağışlanır.',de:'Wer am Tag hundertmal "Subhanallahi wa bihamdih" sagt, dem werden die Verfehlungen vergeben, auch wenn sie wie der Schaum des Meeres sind.',src:'Buhârî, Müslim'},
+ {tr:'Namaza acele etmeden, huşû ile durun. Rükû ve secdede biraz bekleyip dinlenmek namazın tamamlanmasındandır.',de:'Beten Sie ohne Hast und mit Andacht. Das ruhige Verweilen in Verbeugung und Niederwerfung gehört zur Vollkommenheit des Gebets.'},
+ {tr:'Peygamberimiz, ümmetine zor gelmeyecek olsa her namazda misvak kullanmalarını emredeceğini söylemiştir.',de:'Der Prophet sagte, er würde seiner Gemeinschaft den Gebrauch des Miswak bei jedem Gebet anordnen, wenn es nicht zu beschwerlich wäre.',src:'Buhârî, Müslim'},
+ {tr:'Yatmadan önce Âyetü\'l-Kürsî\'yi okumak, sabaha kadar Allah\'ın koruması altında olmaya vesiledir.',de:'Wer vor dem Schlafen Ayat al-Kursi liest, steht bis zum Morgen unter dem Schutz Gottes.',src:'Buhârî'},
+ {tr:'Akraba ziyareti rızkı bereketlendirir ve ömre hayır katar. Bugün bir akrabanızı arayın.',de:'Der Besuch von Verwandten bringt Segen im Lebensunterhalt und im Leben. Rufen Sie heute einen Verwandten an.',src:'Buhârî, Müslim'},
+ {tr:'Almanya gibi kuzey ülkelerinde yaz aylarında yatsı ve imsak vakitleri çok yakınlaşır. Vakitleri her gün kontrol edin.',de:'In nördlichen Ländern wie Deutschland rücken im Sommer die Zeiten von Fadschr und Ischa sehr eng zusammen. Prüfen Sie die Zeiten täglich.'},
+ {tr:'Uyuyup ya da unutup namazı kaçıran kişi, hatırladığı anda namazı kılar.',de:'Wer das Gebet verschläft oder vergisst, betet es, sobald er sich daran erinnert.',src:'Müslim'},
+ {tr:'Bir hurmanın yarısıyla bile olsa sadaka vererek kendinizi ateşten koruyun.',de:'Schützen Sie sich vor dem Feuer, und sei es mit einer halben Dattel als Almosen.',src:'Buhârî, Müslim'},
+ {tr:'Yemeğe "Bismillah" ile başlayın, sağ elinizle ve önünüzden yiyin.',de:'Beginnen Sie das Essen mit "Bismillah", essen Sie mit der rechten Hand und von dem, was vor Ihnen liegt.',src:'Buhârî, Müslim'},
+ {tr:'Mideyi üçe bölün: bir pay yemek, bir pay su, bir pay nefes için. Doymadan sofradan kalkmak sağlığa iyi gelir.',de:'Teilen Sie den Magen in drei Teile: für Essen, für Wasser und für den Atem. Wer nicht ganz satt aufsteht, tut seiner Gesundheit etwas Gutes.',src:'Tirmizî, İbn Mâce'},
+ {tr:'Allah\'a en sevimli amel, az da olsa devamlı olanıdır. Her gün Kur\'an\'dan birkaç ayet okumayı alışkanlık yapın.',de:'Die Gott liebste Tat ist die beständige, auch wenn sie klein ist. Machen Sie es sich zur Gewohnheit, täglich einige Verse zu lesen.',src:'Buhârî, Müslim'}
+];
+const WEEK={
+ 5:{tr:'Bugün Cuma. Gusül abdesti almak, güzel koku sürmek, erkenden camiye gitmek ve çokça salavat getirmek bu günün adabındandır.',de:'Heute ist Freitag. Zum Anstand dieses Tages gehören die Ganzkörperwaschung, Duft, ein früher Gang zur Moschee und viele Segenswünsche auf den Propheten.'},
+ 1:{tr:'Bugün Pazartesi. Pazartesi ve Perşembe günleri nafile oruç tutmak sünnettir.',de:'Heute ist Montag. Es ist Sunna, montags und donnerstags freiwillig zu fasten.'},
+ 4:{tr:'Bugün Perşembe. Pazartesi ve Perşembe günleri nafile oruç tutmak sünnettir.',de:'Heute ist Donnerstag. Es ist Sunna, montags und donnerstags freiwillig zu fasten.'}
+};
+/* Diyanet takvimine göre (kaynak: milligazete.com.tr, Diyanet 2026-2027 takvimi) */
+const DAYS=[
+ [2026,12,10,'Regaip Kandili ve Üç Aylar\'ın başlangıcı','Regaib-Nacht und Beginn der Drei Monate'],
+ [2027,1,4,'Miraç Kandili','Miradsch-Nacht (Nacht der Himmelsreise)'],
+ [2027,1,9,'Şaban ayının başlangıcı','Beginn des Monats Schaban'],
+ [2027,1,22,'Berat Kandili','Berat-Nacht'],
+ [2027,2,8,'Ramazan ayının başlangıcı (ilk oruç)','Beginn des Ramadan (erster Fastentag)'],
+ [2027,3,5,'Kadir Gecesi','Nacht der Bestimmung (Lailat al-Qadr)'],
+ [2027,3,8,'Ramazan Bayramı arefesi','Vorabend des Ramadanfestes'],
+ [2027,3,9,'Ramazan Bayramı (1. gün)','Ramadanfest (1. Tag)']
+];
+const RECIPES=[
+ {tr:'Mercimek çorbası',de:'Rote Linsensuppe',min:30,n:4,
+  ing:[['1 su bardağı kırmızı mercimek','1 Tasse rote Linsen'],['1 soğan','1 Zwiebel'],['1 havuç','1 Karotte'],['1 patates','1 Kartoffel'],['1 yemek kaşığı tereyağı','1 EL Butter'],['5 su bardağı sıcak su, tuz, kimyon','5 Tassen heißes Wasser, Salz, Kreuzkümmel']],
+  st:[['Soğanı tereyağında kavurun.','Die Zwiebel in der Butter anbraten.'],['Doğranmış havuç, patates ve yıkanmış mercimeği ekleyin.','Karotte, Kartoffel und gewaschene Linsen dazugeben.'],['Sıcak suyu ekleyip sebzeler yumuşayana kadar yaklaşık 20 dakika pişirin.','Mit dem heißen Wasser etwa 20 Minuten kochen, bis das Gemüse weich ist.'],['Blenderdan geçirin, tuz ve kimyonla tatlandırın. Limon sıkarak servis edin.','Pürieren, mit Salz und Kreuzkümmel abschmecken und mit Zitrone servieren.']]},
+ {tr:'Menemen',de:'Menemen (Rührei mit Tomaten und Paprika)',min:15,n:2,
+  ing:[['3 yumurta','3 Eier'],['2 domates','2 Tomaten'],['2 yeşil biber','2 grüne Spitzpaprika'],['1 yemek kaşığı tereyağı veya zeytinyağı','1 EL Butter oder Olivenöl'],['Tuz, pul biber','Salz, Chiliflocken']],
+  st:[['Biberleri tereyağında hafifçe kavurun.','Die Paprika in der Butter kurz anbraten.'],['Rendelenmiş veya doğranmış domatesleri ekleyip suyunu çekene kadar pişirin.','Geriebene oder gewürfelte Tomaten dazugeben und einkochen lassen.'],['Yumurtaları kırıp hafifçe karıştırın, istediğiniz kıvama gelince ocaktan alın.','Eier hineinschlagen, leicht verrühren und nach Wunsch stocken lassen.']]},
+ {tr:'Mücver',de:'Zucchini-Puffer (Mücver)',min:30,n:4,
+  ing:[['3 orta boy kabak','3 mittelgroße Zucchini'],['2 yumurta','2 Eier'],['1/2 su bardağı un','1/2 Tasse Mehl'],['Dereotu ve maydanoz','Dill und Petersilie'],['100 g beyaz peynir (isteğe bağlı)','100 g Schafskäse (optional)'],['Tuz, karabiber, kızartmak için yağ','Salz, Pfeffer, Öl zum Braten']],
+  st:[['Kabakları rendeleyip tuzla, suyunu iyice sıkın.','Die Zucchini raspeln, salzen und gut ausdrücken.'],['Yumurta, un, kıyılmış otlar ve peyniri ekleyip karıştırın.','Eier, Mehl, gehackte Kräuter und Käse unterrühren.'],['Kaşıkla yağa alıp iki yüzü de altın rengi olana kadar kızartın.','Löffelweise ins heiße Öl geben und beidseitig goldbraun braten.'],['Kağıt havluda süzdürüp yoğurtla servis edin.','Auf Küchenpapier abtropfen lassen und mit Joghurt servieren.']]},
+ {tr:'Şehriyeli pilav',de:'Reis mit Fadennudeln',min:30,n:4,
+  ing:[['1,5 su bardağı pirinç','1,5 Tassen Reis'],['1/2 su bardağı tel şehriye','1/2 Tasse Fadennudeln'],['2 yemek kaşığı tereyağı','2 EL Butter'],['3 su bardağı sıcak su veya tavuk suyu','3 Tassen heißes Wasser oder Hühnerbrühe'],['Tuz','Salz']],
+  st:[['Pirinci ılık tuzlu suda 15 dakika bekletip süzün.','Den Reis 15 Minuten in lauwarmem Salzwasser einweichen und abtropfen lassen.'],['Şehriyeyi tereyağında kızarana kadar kavurun, pirinci ekleyip birkaç dakika daha çevirin.','Die Fadennudeln in der Butter goldbraun rösten, Reis dazugeben und kurz mitrösten.'],['Sıcak suyu ve tuzu ekleyin, kısık ateşte kapağı kapalı 15 dakika pişirin.','Heißes Wasser und Salz zugeben und zugedeckt 15 Minuten auf kleiner Flamme garen.'],['Ocağı kapatıp üzerine bez koyarak 10 dakika demlendirin.','Herd ausschalten und mit einem Tuch unter dem Deckel 10 Minuten ruhen lassen.']]},
+ {tr:'Tavuk sote',de:'Hähnchenpfanne mit Paprika',min:35,n:4,
+  ing:[['500 g tavuk göğsü','500 g Hähnchenbrust'],['2 biber','2 Paprika'],['2 domates','2 Tomaten'],['1 soğan, 2 diş sarımsak','1 Zwiebel, 2 Knoblauchzehen'],['2 yemek kaşığı zeytinyağı','2 EL Olivenöl'],['Tuz, karabiber, kekik','Salz, Pfeffer, Thymian']],
+  st:[['Tavuğu küp doğrayıp yağda tüm yüzleri renk alana kadar kavurun.','Das Hähnchen würfeln und in Öl rundum anbraten.'],['Soğan ve sarımsağı ekleyip pembeleşene kadar çevirin.','Zwiebel und Knoblauch zugeben und glasig dünsten.'],['Biber ve domatesi ekleyin, baharatlarla 15 dakika kapağı kapalı pişirin.','Paprika und Tomaten mit den Gewürzen zugeben und zugedeckt 15 Minuten garen.']]},
+ {tr:'Köfte',de:'Köfte (Hackfleischbällchen)',min:30,n:4,
+  ing:[['500 g dana kıyma','500 g Rinderhack'],['1 soğan (rendelenmiş)','1 Zwiebel (gerieben)'],['1 dilim bayat ekmek içi','1 Scheibe altes Brot ohne Rinde'],['1 yumurta','1 Ei'],['Tuz, karabiber, kimyon, maydanoz','Salz, Pfeffer, Kreuzkümmel, Petersilie']],
+  st:[['Tüm malzemeleri yoğurup 20 dakika dinlendirin.','Alle Zutaten verkneten und 20 Minuten ruhen lassen.'],['Ceviz büyüklüğünde parçalar alıp şekil verin.','Walnussgroße Stücke abnehmen und formen.'],['Tavada veya ızgarada iki yüzünü de pişirin. Pilav ve salata ile servis edin.','In der Pfanne oder auf dem Grill von beiden Seiten garen. Mit Reis und Salat servieren.']]},
+ {tr:'Sütlaç',de:'Türkischer Milchreis',min:40,n:6,
+  ing:[['1/2 su bardağı pirinç','1/2 Tasse Reis'],['1 litre süt','1 Liter Milch'],['3/4 su bardağı şeker','3/4 Tasse Zucker'],['1 yemek kaşığı nişasta','1 EL Speisestärke'],['1 paket vanilya','1 Päckchen Vanillezucker']],
+  st:[['Pirinci 1 su bardağı suda yumuşayana kadar haşlayın.','Den Reis in 1 Tasse Wasser weich kochen.'],['Sütü ve şekeri ekleyip kısık ateşte 15 dakika pişirin.','Milch und Zucker zugeben und 15 Minuten auf kleiner Flamme köcheln.'],['Soğuk sütle açılmış nişastayı ekleyip koyulaşana kadar karıştırın, vanilya ilave edin.','In kalter Milch angerührte Stärke einrühren, bis es eindickt, dann Vanille zugeben.'],['Kaselere paylaştırıp soğutun.','In Schälchen füllen und kalt stellen.']]},
+ {tr:'Cacık',de:'Gurken-Joghurt (Cacık)',min:10,n:4,
+  ing:[['2 su bardağı yoğurt','2 Tassen Joghurt'],['2 salatalık','2 Gurken'],['1-2 diş sarımsak','1-2 Knoblauchzehen'],['Nane veya dereotu, tuz','Minze oder Dill, Salz'],['1 yemek kaşığı zeytinyağı','1 EL Olivenöl']],
+  st:[['Salatalıkları küp doğrayın veya rendeleyin.','Die Gurken würfeln oder raspeln.'],['Yoğurda ezilmiş sarımsak, tuz ve salatalığı ekleyin.','Zerdrückten Knoblauch, Salz und Gurken in den Joghurt rühren.'],['Nane ve zeytinyağıyla servis edin.','Mit Minze und Olivenöl servieren.']]},
+ {tr:'Domates çorbası',de:'Tomatensuppe',min:30,n:4,
+  ing:[['4 büyük domates','4 große Tomaten'],['1 yemek kaşığı salça','1 EL Tomatenmark'],['2 yemek kaşığı un','2 EL Mehl'],['1 yemek kaşığı tereyağı','1 EL Butter'],['3 su bardağı süt veya su','3 Tassen Milch oder Wasser'],['Tuz, karabiber','Salz, Pfeffer']],
+  st:[['Tereyağında unu kokusu çıkana kadar kavurun, salçayı ekleyin.','Mehl in der Butter anschwitzen, Tomatenmark zugeben.'],['Rendelenmiş domatesleri ve sıvıyı ekleyip 15 dakika pişirin.','Geriebene Tomaten und Flüssigkeit zugeben und 15 Minuten kochen.'],['Blenderdan geçirip baharatla tatlandırın.','Pürieren und abschmecken.']]},
+ {tr:'Fırında patates',de:'Ofenkartoffeln',min:45,n:4,
+  ing:[['1 kg patates','1 kg Kartoffeln'],['3 yemek kaşığı zeytinyağı','3 EL Olivenöl'],['1 tatlı kaşığı pul biber, 1 tatlı kaşığı kekik','1 TL Chiliflocken, 1 TL Thymian'],['Tuz, 2 diş sarımsak','Salz, 2 Knoblauchzehen']],
+  st:[['Fırını 200 dereceye ısıtın. Patatesleri dilimleyin.','Den Ofen auf 200 Grad vorheizen. Die Kartoffeln in Spalten schneiden.'],['Yağ ve baharatlarla karıştırıp tepsiye dizin.','Mit Öl und Gewürzen mischen und auf ein Blech legen.'],['35-40 dakika, yarısında çevirerek pişirin.','35-40 Minuten backen, dabei einmal wenden.']]},
+ {tr:'Bulgur pilavı',de:'Bulgur-Pilav',min:25,n:4,
+  ing:[['1,5 su bardağı bulgur','1,5 Tassen Bulgur'],['1 soğan, 1 biber, 1 domates','1 Zwiebel, 1 Paprika, 1 Tomate'],['2 yemek kaşığı zeytinyağı','2 EL Olivenöl'],['3 su bardağı sıcak su','3 Tassen heißes Wasser'],['Tuz, 1 yemek kaşığı salça','Salz, 1 EL Tomatenmark']],
+  st:[['Soğan ve biberi yağda kavurun, salçayı ekleyin.','Zwiebel und Paprika im Öl anbraten, Tomatenmark zugeben.'],['Domates ve bulguru ekleyip 2 dakika çevirin.','Tomate und Bulgur zugeben und 2 Minuten rühren.'],['Sıcak suyu ve tuzu ekleyin, kapağı kapalı kısık ateşte 12 dakika pişirin, 10 dakika demlendirin.','Heißes Wasser und Salz zugeben, zugedeckt 12 Minuten garen und 10 Minuten ruhen lassen.']]},
+ {tr:'Ispanaklı nohut',de:'Kichererbsen mit Spinat',min:30,n:4,
+  ing:[['1 kutu haşlanmış nohut (veya 1,5 su bardağı)','1 Dose gekochte Kichererbsen'],['500 g ıspanak','500 g Spinat'],['1 soğan, 2 diş sarımsak','1 Zwiebel, 2 Knoblauchzehen'],['2 yemek kaşığı zeytinyağı','2 EL Olivenöl'],['1 yemek kaşığı salça, tuz, pul biber','1 EL Tomatenmark, Salz, Chiliflocken']],
+  st:[['Soğan ve sarımsağı yağda kavurun, salçayı ekleyin.','Zwiebel und Knoblauch in Öl anbraten, Tomatenmark zugeben.'],['Doğranmış ıspanağı ekleyip solana kadar pişirin.','Den gehackten Spinat zugeben und zusammenfallen lassen.'],['Nohutu ve yarım su bardağı su ekleyip 10 dakika pişirin. Limonla servis edin.','Kichererbsen und eine halbe Tasse Wasser zugeben und 10 Minuten köcheln. Mit Zitrone servieren.']]}
+];
+
+/* ===================== durum ===================== */
+let city=null, sel=null, tab='today', lang='both', customPlace=null;
+const $=id=>document.getElementById(id);
+const pad=n=>String(n).padStart(2,'0');
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+/* iki dilli metin */
+const P=(tr,de)=>lang==='tr'?tr:lang==='de'?de:`${tr} / ${de}`;
+const B=(tr,de)=>lang==='tr'?tr:lang==='de'?de:`${tr}<span class="de">${de}</span>`;
+function tzParts(ms,tz){const o={};new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(ms)).forEach(x=>o[x.type]=+x.value);return{y:o.year,m:o.month,d:o.day}}
+function addDays(s,n){const t=new Date(Date.UTC(s.y,s.m-1,s.d+n));return{y:t.getUTCFullYear(),m:t.getUTCMonth()+1,d:t.getUTCDate()}}
+const same=(a,b)=>a.y===b.y&&a.m===b.m&&a.d===b.d;
+const dow=s=>new Date(Date.UTC(s.y,s.m-1,s.d)).getUTCDay();
+const dayNo=s=>Math.floor(Date.UTC(s.y,s.m-1,s.d)/86400000);
+const hm=ms=>new Intl.DateTimeFormat('tr-TR',{timeZone:city.tz,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date(ms));
+const dayTimes=s=>calcDay(s.y,s.m,s.d,city.lat,city.lon);
+const dateTxt=s=>B(`${s.d} ${MTR[s.m-1]} ${s.y}`,`${s.d}. ${MDE[s.m-1]} ${s.y}`);
+const wdTxt=s=>B(WTR[dow(s)],WDE[dow(s)]);
+const dirOf=(a,arr)=>arr[Math.round(a/45)%8];
+const place=()=>city.name;
+
+/* ===================== görünüm ===================== */
+function drawArc(times,now,isToday){
+  const sr=times[1],ss=times[4],cx=160,cy=84,r=140;
+  const p=a=>[cx+r*Math.cos(a*R),cy-r*0.55*Math.sin(a*R)];
+  let t=(now-sr)/(ss-sr);const inDay=isToday&&t>=0&&t<=1;t=Math.min(1,Math.max(0,t));
+  const [x,y]=p(180-180*t);
+  let path='M '+p(180).join(' ');for(let a=170;a>=0;a-=10)path+=' L '+p(a).join(' ');
+  return `<svg class="arc" viewBox="0 0 320 104" role="img" aria-label="${lang==='de'?'Sonnenstand':'Güneşin konumu'}">
+   <line x1="10" y1="${cy}" x2="310" y2="${cy}" stroke="currentColor" stroke-opacity=".35"/>
+   <path d="${path}" fill="none" stroke="currentColor" stroke-opacity=".45" stroke-width="2" stroke-dasharray="3 5"/>
+   ${isToday?`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="8" fill="${inDay?'var(--accent)':'none'}" stroke="var(--accent)" stroke-width="2"/>`:''}
+   <text x="14" y="${cy+18}" font-size="12" fill="currentColor" fill-opacity=".85">${hm(sr)}</text>
+   <text x="306" y="${cy+18}" font-size="12" fill="currentColor" fill-opacity=".85" text-anchor="end">${hm(ss)}</text></svg>`;
+}
+function nextSpecial(today){
+  const n=dayNo(today);
+  for(const [y,m,d,tr,de] of DAYS){const k=dayNo({y,m,d})-n;if(k>=0&&k<=60)return{k,tr,de,y,m,d}}
+  return null;
+}
+function viewToday(){
+  const now=Date.now(),today=tzParts(now,city.tz);if(!sel)sel=today;
+  const isToday=same(sel,today),times=dayTimes(sel);
+  let idx=isToday?times.findIndex(t=>t>now):-1,hero;
+  if(isToday){
+    const nextAt=idx>=0?times[idx]:dayTimes(addDays(sel,1))[0],pn=PN[idx>=0?idx:0];
+    const s=Math.max(0,Math.floor((nextAt-now)/1000));
+    hero=`<div class="lbl">${B('Sıradaki vakit','Nächste Gebetszeit')}</div>
+      <div class="next">${B(pn[0],pn[1])}</div>
+      <div class="at">${idx<0?B('Yarın','Morgen')+' · ':''}${hm(nextAt)}</div>
+      <div class="count" id="cnt">${Math.floor(s/3600)} ${lang==='de'?'Std':'sa'} ${pad(Math.floor(s%3600/60))} ${lang==='de'?'Min':'dk'} ${pad(s%60)} ${lang==='de'?'Sek':'sn'}</div>`;
+  }else hero=`<div class="lbl">${wdTxt(sel)}</div><div class="next">${dateTxt(sel)}</div>
+      <button class="btn" id="back" style="margin-top:6px">${B('Bugüne dön','Zurück zu heute')}</button>`;
+  const q=qiblaDeg(city.lat,city.lon);
+  const sp=isToday?nextSpecial(today):null;
+  return `<div class="hero">${hero}${drawArc(times,now,isToday)}
+    <div class="date"><button id="dPrev" aria-label="${P('Önceki gün','Vortag')}">‹</button>
+      <div class="mid">${P(`${sel.d} ${MTR[sel.m-1]} ${sel.y}`,`${sel.d}. ${MDE[sel.m-1]} ${sel.y}`)}<small>${P(WTR[dow(sel)],WDE[dow(sel)])} · ${place()}</small></div>
+      <button id="dNext" aria-label="${P('Sonraki gün','Folgetag')}">›</button></div></div>
+    <div class="list">${PN.map((pn,i)=>{
+      const cls=isToday?(i===idx?'now':(idx<0||i<idx?'past':'')):'';
+      return `<div class="row ${cls}"><span class="n">${B(pn[0],pn[1])}</span><span class="t">${hm(times[i])}</span></div>`}).join('')}</div>
+    ${sp?`<div class="special">${B(sp.tr,sp.de)}<span class="de" style="display:block">${sp.k===0?B('Bugün','Heute'):sp.k===1?B('Yarın','Morgen'):lang==='de'?`in ${sp.k} Tagen · ${sp.d}.${sp.m}.${sp.y}`:lang==='tr'?`${sp.k} gün sonra · ${sp.d}.${sp.m}.${sp.y}`:`${sp.k} gün sonra / in ${sp.k} Tagen · ${sp.d}.${sp.m}.${sp.y}`}</span></div>`:''}
+    <div class="box qibla"><span>${B('Kıble yönü (kuzeyden)','Gebetsrichtung (von Norden)')}</span><b>${Math.round(q)}° ${dirOf(q,lang==='de'?DIR_DE:DIR_TR)}</b></div>
+    <p class="note">${B('Hesaplama Diyanet yöntemine göredir (imsak 18°, yatsı 17°). Resmi takvimle 1-2 dakika fark olabilir.'+(city.lat>=45?' Yazın kuzey enlemlerde imsak ve yatsı yaklaşık değerdir.':''),'Die Berechnung folgt der Diyanet-Methode (Fadschr 18°, Ischa 17°). Abweichungen von 1-2 Minuten zum offiziellen Kalender sind möglich.'+(city.lat>=45?' Im Sommer sind Fadschr und Ischa in nördlichen Breiten nur Näherungswerte.':''))}</p>`;
+}
+function viewDaily(){
+  const d=sel||tzParts(Date.now(),city.tz),n=dayNo(d);
+  const a=AYAHS[n%AYAHS.length],h=HADITHS[(n+7)%HADITHS.length],t=TIPS[(n+3)%TIPS.length],r=RECIPES[n%RECIPES.length],wk=WEEK[dow(d)];
+  const srcOf=s=>s?`<div class="ref">${P('Kaynak','Quelle')}: ${s}</div>`:'';
+  return `<div class="nav"><button id="gPrev" aria-label="${P('Önceki gün','Vortag')}">‹</button>
+      <div class="ttl">${dateTxt(d)}<span class="de">${lang==='de'?WDE[dow(d)]:lang==='tr'?WTR[dow(d)]:WTR[dow(d)]+' / '+WDE[dow(d)]}</span></div>
+      <button id="gNext" aria-label="${P('Sonraki gün','Folgetag')}">›</button></div>
+    <div class="box"><h2>${B('Günün ayeti','Vers des Tages')}</h2>
+      <p class="ar" lang="ar">${a.ar}</p><p>${B(a.tr,a.de)}</p><div class="ref">${a.ref}</div></div>
+    <div class="box"><h2>${B('Günün hadisi','Hadith des Tages')}</h2>
+      <p>${B(h.tr,h.de)}</p>${srcOf(h.src)}</div>
+    <div class="box"><h2>${B('Günün bilgisi','Wissenswertes')}</h2>
+      ${wk?`<p>${B(wk.tr,wk.de)}</p>`:''}<p>${B(t.tr,t.de)}</p>${srcOf(t.src)}</div>
+    <div class="box rec"><h2>${B('Günün tarifi','Rezept des Tages')}</h2>
+      <h3>${B(r.tr,r.de)}</h3>
+      <div class="meta">${r.min} ${lang==='de'?'Min':'dk'} · ${r.n} ${P('kişilik','Portionen')}</div>
+      <p><b>${B('Malzemeler','Zutaten')}</b></p><ul>${r.ing.map(x=>`<li>${B(x[0],x[1])}</li>`).join('')}</ul>
+      <p><b>${B('Yapılışı','Zubereitung')}</b></p><ol>${r.st.map(x=>`<li>${B(x[0],x[1])}</li>`).join('')}</ol></div>
+    <p class="note">${B('Meal ve hadis çevirileri serbest çeviridir. Kesin metin ve ayrıntı için güvenilir bir meal, hadis kaynağı veya din görevlisine başvurun.','Die Übersetzungen von Koranversen und Hadithen sind sinngemäß. Für den genauen Wortlaut und Einzelheiten ziehen Sie bitte eine verlässliche Ausgabe oder eine kundige Person zurate.')}</p>`;
+}
+function viewMonth(){
+  const base=sel||tzParts(Date.now(),city.tz),today=tzParts(Date.now(),city.tz);
+  const n=new Date(Date.UTC(base.y,base.m,0)).getUTCDate();
+  let h=`<div class="nav"><button id="mPrev" aria-label="${P('Önceki ay','Vormonat')}">‹</button>
+    <div class="ttl">${B(MTR[base.m-1],MDE[base.m-1])} ${base.y}<span class="de">${place()}</span></div>
+    <button id="mNext" aria-label="${P('Sonraki ay','Folgemonat')}">›</button></div>
+    <div class="tw"><table><thead><tr><th>${B('Gün','Tag')}</th>${PN.map(p=>`<th>${B(p[0],p[1])}</th>`).join('')}</tr></thead><tbody>`;
+  for(let d=1;d<=n;d++){const s={y:base.y,m:base.m,d};
+    h+=`<tr class="${same(s,today)?'today':''}"><td>${d} ${WTR[dow(s)].slice(0,3)}</td>${dayTimes(s).map(x=>`<td>${hm(x)}</td>`).join('')}</tr>`}
+  return h+'</tbody></table></div>';
+}
+function chrome(){
+  document.querySelectorAll('#langs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.l===lang));
+  const tn={today:['Bugün','Heute'],daily:['Günlük','Täglich'],month:['Aylık','Monat']};
+  document.querySelectorAll('#tabs button').forEach(b=>{b.innerHTML=B(...tn[b.dataset.t]);b.setAttribute('aria-selected',b.dataset.t===tab)});
+  $('lName').innerHTML=B('Yer adı','Ortsname');$('lLat').innerHTML=B('Enlem','Breitengrad');$('lLon').innerHTML=B('Boylam','Längengrad');
+  $('cSave').innerHTML=B('Kaydet','Speichern');$('cName').placeholder=lang==='de'?'z. B. Bonn':'Örn. Bonn';
+  fillCities();
+}
+function render(){
+  chrome();
+  $('vToday').hidden=tab!=='today';$('vDaily').hidden=tab!=='daily';$('vMonth').hidden=tab!=='month';
+  if(tab==='today'){$('vToday').innerHTML=viewToday();
+    $('dPrev').onclick=()=>{sel=addDays(sel,-1);render()};$('dNext').onclick=()=>{sel=addDays(sel,1);render()};
+    const b=$('back');if(b)b.onclick=()=>{sel=null;render()};}
+  else if(tab==='daily'){$('vDaily').innerHTML=viewDaily();
+    $('gPrev').onclick=()=>{sel=addDays(sel||tzParts(Date.now(),city.tz),-1);render()};$('gNext').onclick=()=>{sel=addDays(sel||tzParts(Date.now(),city.tz),1);render()};}
+  else{$('vMonth').innerHTML=viewMonth();
+    const b=sel||tzParts(Date.now(),city.tz);
+    $('mPrev').onclick=()=>{sel={y:b.m===1?b.y-1:b.y,m:b.m===1?12:b.m-1,d:1};render()};
+    $('mNext').onclick=()=>{sel={y:b.m===12?b.y+1:b.y,m:b.m===12?1:b.m+1,d:1};render()};}
+}
+function fillCities(){
+  const el=$('city'),cur=city===customPlace?'__saved':city.name;
+  let h='';
+  PLACES.forEach(([g])=>{h+=`<optgroup label="${g}">`+CITIES.filter(c=>c.group===g).map(c=>`<option value="${c.name}">${c.name}</option>`).join('')+'</optgroup>'});
+  h+=`<optgroup label="${lang==='de'?'Eigener Ort':'Kendi konumum'}">${customPlace?`<option value="__saved">${customPlace.name.replace(/[<>&"]/g,'')}</option>`:''}<option value="__custom">${lang==='de'?'Koordinaten eingeben…':'Koordinat gir…'}</option></optgroup>`;
+  el.innerHTML=h;el.value=cur;
+}
+function pickCity(name){if(name==='__saved'&&customPlace)return customPlace;return CITIES.find(c=>c.name===name)||null}
+
+/* ===================== olaylar ===================== */
+document.querySelectorAll('#langs button').forEach(b=>b.onclick=()=>{lang=b.dataset.l;store.set('ezan.lang',lang);render()});
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{tab=b.dataset.t;render()});
+$('city').onchange=e=>{
+  const v=e.target.value;
+  if(v==='__custom'){$('custom').hidden=false;$('cName').focus();return}
+  $('custom').hidden=true;city=pickCity(v);store.set('ezan.city',v);sel=null;render();
+};
+$('cSave').onclick=()=>{
+  const name=$('cName').value.trim()||(lang==='de'?'Mein Ort':'Konumum'),lat=parseFloat($('cLat').value.replace(',','.')),lon=parseFloat($('cLon').value.replace(',','.'));
+  if(!(lat>=-66&&lat<=66)||!(lon>=-180&&lon<=180)){$('cErr').textContent=lang==='de'?'Breitengrad -66 bis 66, Längengrad -180 bis 180. Beispiel: 50.7374 und 7.0982.':'Enlem -66 ile 66, boylam -180 ile 180 arasında olmalı. Örnek: 50.7374 ve 7.0982.';return}
+  $('cErr').textContent='';
+  customPlace={name,lat,lon,tz:deviceTz,group:'custom'};
+  store.set('ezan.custom',JSON.stringify(customPlace));city=customPlace;store.set('ezan.city','__saved');$('custom').hidden=true;sel=null;render();
+};
+setInterval(()=>{
+  if(tab!=='today')return;
+  const t=tzParts(Date.now(),city.tz);if(sel&&!same(sel,t))return;
+  const el=$('cnt');if(!el){render();return}
+  const times=dayTimes(t),now=Date.now(),i=times.findIndex(x=>x>now);
+  const at=i>=0?times[i]:dayTimes(addDays(t,1))[0],s=Math.max(0,Math.floor((at-now)/1000));
+  if(s===0||s>=86395){render();return}
+  el.textContent=`${Math.floor(s/3600)} ${lang==='de'?'Std':'sa'} ${pad(Math.floor(s%3600/60))} ${lang==='de'?'Min':'dk'} ${pad(s%60)} ${lang==='de'?'Sek':'sn'}`;
+},1000);
+
+/* ===================== başlat ===================== */
+(function(){
+  try{const c=JSON.parse(store.get('ezan.custom')||'null');if(c&&isFinite(c.lat)&&isFinite(c.lon))customPlace=c}catch(e){}
+  const l=store.get('ezan.lang');if(l==='tr'||l==='de'||l==='both')lang=l;
+  city=pickCity(store.get('ezan.city'))||pickCity(deviceTz==='Europe/Istanbul'?'İstanbul':'Berlin');
+  render();
+})();
+</script>
+
+</body>
+</html>

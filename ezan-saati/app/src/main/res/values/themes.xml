@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.CenazeTakip" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">#15395C</item>
+        <item name="android:navigationBarColor">#FFFFFF</item>
+        <item name="android:windowBackground">#E9F0F5</item>
+    </style>
+</resources>
